@@ -1,3 +1,2 @@
 data/*
-data_segments/chrc_data_segments/train/*
-data_segments/chrc_data_segments/valid/*
+data_segments/*
