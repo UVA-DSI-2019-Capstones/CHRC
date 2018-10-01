@@ -1,2 +1,3 @@
 data/*
-data_segments/*
+data_segments/train/*
+data_segments/vlid/*
