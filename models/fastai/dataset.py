@@ -2,6 +2,13 @@ from PIL.ImageFile import ImageFile
 from .dataloader import DataLoader
 from .transforms import *
 
+# Try to import pydicom for dicom support, but ignore failures which
+# will cause exceptions to be caught when actually trying to read
+# a dicom image.
+try:
+    import pydicom
+except:
+    pass
 
 def get_cv_idxs(n, cv_idx=0, val_pct=0.2, seed=42):
     """ Get a list of index values for Validation set from a dataset
@@ -235,6 +242,16 @@ class BaseDataset(Dataset):
         """True if the data set is used to train regression models."""
         return False
 
+def isdicom(fn):
+    '''True if the fn points to a DICOM image'''
+    fn = str(fn)
+    if fn.endswith('.dcm'):
+        return True
+    # Dicom signature from the dicom spec.
+    with open(fn,'rb') as fh:
+        fh.seek(0x80)
+        return fh.read(4)==b'DICM'
+
 def open_image(fn):
     """ Opens an image using OpenCV given the file path.
 
@@ -249,6 +266,16 @@ def open_image(fn):
         raise OSError('No such file or directory: {}'.format(fn))
     elif os.path.isdir(fn) and not str(fn).startswith("http"):
         raise OSError('Is a directory: {}'.format(fn))
+    elif isdicom(fn):
+        slice = pydicom.read_file(fn)
+        if slice.PhotometricInterpretation.startswith('MONOCHROME'):
+            # Make a fake RGB image
+            im = np.stack([slice.pixel_array]*3,-1)
+            return im / ((1 << slice.BitsStored)-1)
+        else:
+            # No support for RGB yet, as it involves various color spaces.
+            # It shouldn't be too difficult to add though, if needed.
+            raise OSError('Unsupported DICOM image with PhotometricInterpretation=={}'.format(slice.PhotometricInterpretation))
     else:
         #res = np.array(Image.open(fn), dtype=np.float32)/255
         #if len(res.shape)==2: res = np.repeat(res[...,None],3,2)
@@ -510,7 +537,8 @@ class ImageClassifierData(ImageData):
             suffix: suffix to add to image names in CSV file (sometimes CSV only contains the file name without file
                     extension e.g. '.jpg' - in which case, you can set suffix as '.jpg')
             test_name: a name of the folder which contains test images.
-            continuous: TODO
+            continuous: if True, the data set is used to train regression models. If False, it is used 
+                to train classification models.
             skip_header: skip the first row of the CSV file.
             num_workers: number of workers
             cat_separator: Labels category separator
