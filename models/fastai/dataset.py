@@ -2,6 +2,11 @@ from PIL.ImageFile import ImageFile
 from .dataloader import DataLoader
 from .transforms import *
 
+import cv2
+import numpy as np
+from PIL import Image
+import random
+
 # Try to import pydicom for dicom support, but ignore failures which
 # will cause exceptions to be caught when actually trying to read
 # a dicom image.
@@ -287,6 +292,7 @@ def open_image(fn):
                 im = cv2.imdecode(image, flags).astype(np.float32)/255
             else:
                 im = cv2.imread(str(fn), flags).astype(np.float32)/255
+            
             if im is None: raise OSError(f'File not recognized by opencv: {fn}')
             return cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         except Exception as e:
