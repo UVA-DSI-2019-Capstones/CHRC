@@ -37,7 +37,7 @@ stain_normalizer = staintools.StainNormalizer(method='vahadane')
 standardizer = staintools.BrightnessStandardizer()
 
 # choose target image
-target_image = staintools.read_image("/home/ss4yd/chrc_data_segments/train/Celiac/C08-41_01_10000_6500.jpg")
+target_image = staintools.read_image("/home/ss4yd/chrc_data_segments/valid/Celiac/C06-27_01_1000_2000.jpg")
 standard_target_image = standardizer.transform(target_image)
 
 stain_normalizer.fit(standard_target_image)
