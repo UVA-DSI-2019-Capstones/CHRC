@@ -144,15 +144,12 @@ def folder_source(path, folder):
 
 def parse_csv_labels(fn, skip_header=True, cat_separator = ' '):
     """Parse filenames and label sets from a CSV file.
-
     This method expects that the csv file at path :fn: has two columns. If it
     has a header, :skip_header: should be set to True. The labels in the
     label set are expected to be space separated.
-
     Arguments:
         fn: Path to a CSV file.
         skip_header: A boolean flag indicating whether to skip the header.
-
     Returns:
         a two-tuple of (
             image filenames,
@@ -259,10 +256,8 @@ def isdicom(fn):
 
 def open_image(fn):
     """ Opens an image using OpenCV given the file path.
-
     Arguments:
         fn: the file path of the image
-
     Returns:
         The image in RGB format as numpy array of floats normalized to range between 0.0 - 1.0
     """
@@ -322,7 +317,6 @@ class FilesDataset(BaseDataset):
 
     def denorm(self,arr):
         """Reverse the normalization done to a batch of images.
-
         Arguments:
             arr: of shape/size (N,3,sz,sz)
         """
@@ -435,7 +429,6 @@ class ImageData(ModelData):
     def resize(self, targ_sz, new_path='tmp', resume=True, fn=None):
         """
         Resizes all the images in the train, valid, test folders to a given size.
-
         Arguments:
         targ_sz (int): the target size
         new_path (str): the path to save the resized images (default tmp)
@@ -481,7 +474,6 @@ class ImageClassifierData(ImageData):
     @classmethod
     def from_arrays(cls, path, trn, val, bs=64, tfms=(None,None), classes=None, num_workers=4, test=None, continuous=False):
         """ Read in images and their labels given as numpy arrays
-
         Arguments:
             path: a root path of the data (used for storing trained models, precomputed values, etc)
             trn: a tuple of training data matrix and target label/classification array (e.g. `trn=(x,y)` where `x` has the
@@ -492,7 +484,6 @@ class ImageClassifierData(ImageData):
             classes: a list of all labels/classifications
             num_workers: a number of workers
             test: a matrix of test data (the shape should match `trn[0]`)
-
         Returns:
             ImageClassifierData
         """
@@ -503,7 +494,6 @@ class ImageClassifierData(ImageData):
     @classmethod
     def from_paths(cls, path, bs=64, tfms=(None,None), trn_name='train', val_name='valid', test_name=None, test_with_labels=False, num_workers=8):
         """ Read in images and their labels given as sub-folder names
-
         Arguments:
             path: a root path of the data (used for storing trained models, precomputed values, etc)
             bs: batch size
@@ -512,7 +502,6 @@ class ImageClassifierData(ImageData):
             val_name:  a name of the folder that contains validation images.
             test_name:  a name of the folder that contains test images.
             num_workers: number of workers
-
         Returns:
             ImageClassifierData
         """
@@ -528,10 +517,8 @@ class ImageClassifierData(ImageData):
     def from_csv(cls, path, folder, csv_fname, bs=64, tfms=(None,None),
                val_idxs=None, suffix='', test_name=None, continuous=False, skip_header=True, num_workers=8, cat_separator=' '):
         """ Read in images and their labels given as a CSV file.
-
         This method should be used when training image labels are given in an CSV file as opposed to
         sub-directories with label names.
-
         Arguments:
             path: a root path of the data (used for storing trained models, precomputed values, etc)
             folder: a name of the folder in which training images are contained.
@@ -548,7 +535,6 @@ class ImageClassifierData(ImageData):
             skip_header: skip the first row of the CSV file.
             num_workers: number of workers
             cat_separator: Labels category separator
-
         Returns:
             ImageClassifierData
         """
@@ -562,7 +548,6 @@ class ImageClassifierData(ImageData):
     def from_path_and_array(cls, path, folder, y, classes=None, val_idxs=None, test_name=None,
             num_workers=8, tfms=(None,None), bs=64):
         """ Read in images given a sub-folder and their labels given a numpy array
-
         Arguments:
             path: a root path of the data (used for storing trained models, precomputed values, etc)
             folder: a name of the folder in which training images are contained.
@@ -573,7 +558,6 @@ class ImageClassifierData(ImageData):
                 If None, default arguments to get_cv_idxs are used.
             test_name: a name of the folder which contains test images.
             num_workers: number of workers
-
         Returns:
             ImageClassifierData
         """
@@ -601,7 +585,6 @@ def split_by_idx(idxs, *a):
     """
     Split each array passed as *a, to a pair of arrays like this (elements selected by idxs,  the remaining elements)
     This can be used to split multiple arrays containing training data to validation and training set.
-
     :param idxs [int]: list of indexes selected
     :param a list: list of np.array, each array should have same amount of elements in the first dimension
     :return: list of tuples, each containing a split of corresponding array from *a.
@@ -611,4 +594,3 @@ def split_by_idx(idxs, *a):
     mask = np.zeros(len(a[0]),dtype=bool)
     mask[np.array(idxs)] = True
     return [(o[mask],o[~mask]) for o in a]
-
