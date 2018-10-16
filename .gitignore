@@ -1,3 +1,4 @@
 data/*
 data_segments/*
 models/fastai/*
+image_augmentation/.ipynb_checkpoints/*
