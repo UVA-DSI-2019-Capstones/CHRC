@@ -1,24 +1,6 @@
 from .imports import *
 from .layer_optimizer import *
 from enum import IntEnum
-import cv2
-
-def adjust_contrast(image, contrast): 
-    image = image * (contrast/127+1) - contrast
-    return np.clip(image, 0, 1)
-
-def hsv_correction(image, hue_delta, saturation_delta, value_delta):
-#     print(hue_delta)
-#     print(saturation_delta)
-#     print(value_delta)
-    
-    image[:, :, 0]  =  image[:, :, 0] + 2.5*hue_delta*(image[:, :, 0].std())
-    image[:, :, 1]  =  image[:, :, 1] + 2*saturation_delta*(image[:, :, 1].std())
-    image[:, :, 2]  =  image[:, :, 2] + 2.5*value_delta*(image[:, :, 2].std())
-    
-    im = cv2.cvtColor(image, cv2.COLOR_HSV2RGB)
-    
-    return adjust_contrast(im, (random.randint(-4, 8)*5/255))
 
 def scale_min(im, targ, interpolation=cv2.INTER_AREA):
     """ Scale the image so that the smallest axis is of size targ.
@@ -55,10 +37,8 @@ def dihedral(x, dih):
 def lighting(im, b, c):
     """ Adjust image balance and contrast """
     if b==0 and c==1: return im
-    hue_delta = random.uniform(-0.04, 0.04)
-    saturation_delta = random.uniform(0, 0.25)
-    value_delta = random.uniform(-0.25, 0.25)
-    return hsv_correction(cv2.cvtColor(im, cv2.COLOR_RGB2HSV), hue_delta, saturation_delta, value_delta)
+    mu = np.average(im)
+    return np.clip((im-mu)*c+mu+b,0.,1.).astype(np.float32)
 
 def rotate_cv(im, deg, mode=cv2.BORDER_CONSTANT, interpolation=cv2.INTER_AREA):
     """ Rotate an image by deg degrees
@@ -316,36 +296,6 @@ class CenterCrop(CoordTransform):
 
     def do_transform(self, x, is_y):
         return center_crop(x, self.sz_y if is_y else self.min_sz)
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-# class HSVTransform(Transform):
-
-#     def __init__(self, tfm_y=TfmType.NO):
-#         super().__init__(tfm_y)
-
-#     def set_state(self):
-#         pass
-
-#     def do_transform(self, x):
-#         hue_delta = random.uniform(-0.04, 0.04)
-#         saturation_delta = random.uniform(0, 0.25)
-#         value_delta = random.uniform(-0.25, 0.25)
-#         return hsv_correction(cv2.cvtColor(x, cv2.COLOR_RGB2HSV), hue_delta, saturation_delta, value_delta)    
 
 
 class RandomCrop(CoordTransform):
@@ -656,10 +606,8 @@ class GoogleNetResize(CoordTransform):
 
 def compose(im, y, fns):
     """ Apply a collection of transformation functions :fns: to images """
-#     print(fns)
     for fn in fns:
         #pdb.set_trace()
-        
         im, y =fn(im, y)
     return im if y is None else (im, y)
 
