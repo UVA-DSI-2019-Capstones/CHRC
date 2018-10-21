@@ -4,7 +4,6 @@ from enum import IntEnum
 
 def scale_min(im, targ, interpolation=cv2.INTER_AREA):
     """ Scale the image so that the smallest axis is of size targ.
-
     Arguments:
         im (array): image
         targ (int): target size
@@ -43,7 +42,6 @@ def lighting(im, b, c):
 
 def rotate_cv(im, deg, mode=cv2.BORDER_CONSTANT, interpolation=cv2.INTER_AREA):
     """ Rotate an image by deg degrees
-
     Arguments:
         deg (float): degree to rotate.
     """
@@ -193,7 +191,6 @@ def to_bb(YY, y="deprecated"):
 
 def coords2px(y, x):
     """ Transforming coordinates to pixels.
-
     Arguments:
         y : np array
             vector in which (y[0], y[1]) and (y[2], y[3]) are the
@@ -214,10 +211,8 @@ def coords2px(y, x):
 
 class Transform():
     """ A class that represents a transform.
-
     All other transforms should subclass it. All subclasses should override
     do_transform.
-
     Arguments
     ---------
         tfm_y : TfmType
@@ -270,7 +265,6 @@ class CoordTransform(Transform):
 
 class AddPadding(CoordTransform):
     """ A class that represents adding paddings to an image.
-
     The default padding is border_reflect
     Arguments
     ---------
@@ -288,7 +282,6 @@ class AddPadding(CoordTransform):
 
 class CenterCrop(CoordTransform):
     """ A class that represents a Center Crop.
-
     This transforms (optionally) transforms x,y at with the same parameters.
     Arguments
     ---------
@@ -307,7 +300,6 @@ class CenterCrop(CoordTransform):
 
 class RandomCrop(CoordTransform):
     """ A class that represents a Random Crop transformation.
-
     This transforms (optionally) transforms x,y at with the same parameters.
     Arguments
     ---------
@@ -340,7 +332,6 @@ class CropNoop(CoordTransform):
     
 class NoCrop(CoordTransform):
     """  A transformation that resize to a square image without cropping.
-
     This transforms (optionally) resizes x,y at with the same parameters.
     Arguments:
         targ: int
@@ -358,7 +349,6 @@ class NoCrop(CoordTransform):
 
 class Scale(CoordTransform):
     """ A transformation that scales the min size to sz.
-
     Arguments:
         sz: int
             target size to scale minimum size.
@@ -376,7 +366,6 @@ class Scale(CoordTransform):
 
 class RandomScale(CoordTransform):
     """ Scales an image so that the min size is a random number between [sz, sz*max_zoom]
-
     This transforms (optionally) scales x,y at with the same parameters.
     Arguments:
         sz: int
@@ -409,7 +398,6 @@ class RandomScale(CoordTransform):
 
 class RandomRotate(CoordTransform):
     """ Rotates images and (optionally) target y.
-
     Rotating coordinates is treated differently for x and y on this
     transform.
      Arguments:
@@ -653,7 +641,6 @@ def image_gen(normalizer, denorm, sz, tfms=None, max_zoom=None, pad=0, crop_type
               tfm_y=None, sz_y=None, pad_mode=cv2.BORDER_REFLECT, scale=None):
     """
     Generate a standard set of transformations
-
     Arguments
     ---------
      normalizer :
@@ -676,12 +663,10 @@ def image_gen(normalizer, denorm, sz, tfms=None, max_zoom=None, pad=0, crop_type
          y size, height
      pad_mode :
          cv2 padding style: repeat, reflect, etc.
-
     Returns
     -------
      type : ``Transforms``
          transformer for specified image operations.
-
     See Also
     --------
      Transforms: the transformer object returned by this function
@@ -732,11 +717,9 @@ def tfms_from_model(f_model, sz, aug_tfms=None, max_zoom=None, pad=0, crop_type=
                     tfm_y=None, sz_y=None, pad_mode=cv2.BORDER_REFLECT, norm_y=True, scale=None):
     """ Returns separate transformers of images for training and validation.
     Transformers are constructed according to the image statistics given by the model. (See tfms_from_stats)
-
     Arguments:
         f_model: model, pretrained or not pretrained
     """
     stats = inception_stats if f_model in inception_models else imagenet_stats
     return tfms_from_stats(stats, sz, aug_tfms, max_zoom=max_zoom, pad=pad, crop_type=crop_type,
                            tfm_y=tfm_y, sz_y=sz_y, pad_mode=pad_mode, norm_y=norm_y, scale=scale)
-
