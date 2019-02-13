@@ -3,6 +3,7 @@ results/*
 data/*
 data_segments/*
 models/fastai/*
+*.pyc
 
 MANIFEST
 build
