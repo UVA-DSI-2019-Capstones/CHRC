@@ -4,6 +4,7 @@ data/*
 data_segments/*
 models/fastai/*
 */*.pyc
+*.cpython-36.pyc
 
 MANIFEST
 build
